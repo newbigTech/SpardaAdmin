@@ -6,7 +6,7 @@ export function loginByUsername(username, password) {
     password
   }
   return fetch({
-    url: '/login/login',
+    url: '/useradmin/doLogin',
     method: 'post',
     data
   })
@@ -19,11 +19,10 @@ export function logout() {
   })
 }
 
-export function getUserInfo(token) {
+export function getUserInfo() {
   return fetch({
-    url: '/user/info',
-    method: 'get',
-    params: { token }
+    url: '/useradmin/get',
+    method: 'get'
   })
 }
 

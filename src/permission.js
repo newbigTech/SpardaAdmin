@@ -6,6 +6,8 @@ import { getToken } from '@/utils/auth' // 验权
 
 // permissiom judge
 function hasPermission(roles, permissionRoles) {
+  console.log(roles)
+  console.log('---------')
   if (roles.indexOf('admin') >= 0) return true // admin权限 直接通过
   if (!permissionRoles) return true
   return roles.some(role => permissionRoles.indexOf(role) >= 0)
@@ -19,9 +21,13 @@ router.beforeEach((to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/' })
     } else {
+      console.log(store.getters.roles)
+      console.log('=============')
       if (store.getters.roles.length === 0) { // 判断当前用户是否已拉取完user_info信息
         store.dispatch('GetUserInfo').then(res => { // 拉取user_info
-          const roles = res.data.role
+          const roles = res.data.result.role
+          console.log(res)
+          console.log('999999999999999')
           store.dispatch('GenerateRoutes', { roles }).then(() => { // 生成可访问的路由表
             router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表
             next({ ...to }) // hack方法 确保addRoutes已完成

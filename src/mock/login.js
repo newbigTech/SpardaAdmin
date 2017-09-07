@@ -1,4 +1,4 @@
-import { param2Obj } from '@/utils'
+// import { param2Obj } from '@/utils'
 
 const userMap = {
   admin: {
@@ -30,7 +30,7 @@ export default {
     return userMap[username]
   },
   getUserInfo: config => {
-    const { token } = param2Obj(config.url)
+    const token = 'admin'
     if (userMap[token]) {
       return userMap[token]
     } else {

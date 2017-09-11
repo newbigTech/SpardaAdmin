@@ -34,7 +34,7 @@ export const constantRouterMap = [
     redirect: '/introduction/index',
     icon: 'xinrenzhinan',
     noDropdown: true,
-    children: [{ path: 'index', component: _import('introduction/index'), name: '简述' }]
+    children: [{ path: 'index', component: _import('introduction/index'), name: 'XXXX' }]
   }
 ]
 
@@ -46,122 +46,91 @@ export default new Router({
 
 export const asyncRouterMap = [
   {
-    path: '/permission',
-    component: Layout,
-    redirect: '/permission/index',
-    name: '权限测试',
-    icon: 'quanxian',
-    meta: { role: ['admin'] },
-    noDropdown: true,
-    children: [{ path: 'index', component: _import('permission/index'), name: '权限测试页', meta: { role: ['admin'] }}]
-  },
-  {
-    path: '/icon',
-    component: Layout,
-    icon: 'icons',
-    noDropdown: true,
-    children: [{ path: 'index', component: _import('svg-icons/index'), name: 'icons' }]
-  },
-  {
     path: '/components',
     component: Layout,
     redirect: '/components/index',
-    name: '组件',
+    name: '调度中心',
     icon: 'zujian',
     children: [
-      { path: 'index', component: _import('components/index'), name: '介绍 ' },
-      { path: 'tinymce', component: _import('components/tinymce'), name: '富文本编辑器' },
-      { path: 'markdown', component: _import('components/markdown'), name: 'Markdown' },
-      { path: 'jsoneditor', component: _import('components/jsonEditor'), name: 'JSON编辑器' },
-      { path: 'dndlist', component: _import('components/dndList'), name: '列表拖拽' },
-      { path: 'splitpane', component: _import('components/splitpane'), name: 'SplitPane' },
-      { path: 'avatarupload', component: _import('components/avatarUpload'), name: '头像上传' },
-      { path: 'dropzone', component: _import('components/dropzone'), name: 'Dropzone' },
-      { path: 'sticky', component: _import('components/sticky'), name: 'Sticky' },
-      { path: 'countto', component: _import('components/countTo'), name: 'CountTo' },
-      { path: 'mixin', component: _import('components/mixin'), name: '小组件' },
-      { path: 'backtotop', component: _import('components/backToTop'), name: '返回顶部' }
+      { path: 'index', icon: 'shouce', component: _import('components/index'), name: '首页实时地图 ' },
+      { path: 'tinymce', icon: 'shouce', component: _import('components/tinymce'), name: '订单列表' }
     ]
   },
   {
     path: '/charts',
     component: Layout,
     redirect: '/charts/index',
-    name: '图表',
+    name: '用户管理',
     icon: 'tubiao',
     children: [
-      { path: 'index', component: _import('charts/index'), name: '介绍' },
-      { path: 'keyboard', component: _import('charts/keyboard'), name: '键盘图表' },
-      { path: 'keyboard2', component: _import('charts/keyboard2'), name: '键盘图表2' },
-      { path: 'line', component: _import('charts/line'), name: '折线图' },
-      { path: 'mixchart', component: _import('charts/mixChart'), name: '混合图表' }
+      { path: 'index', icon: 'from', component: _import('charts/keyboard'), name: '发货方' },
+      { path: 'keyboard2', icon: 'from', component: _import('charts/keyboard2'), name: '收货方' }
     ]
   },
   {
     path: '/example',
     component: Layout,
     redirect: 'noredirect',
-    name: '综合实例',
+    name: '计费管理',
     icon: 'zonghe',
     children: [
-      {
-        path: '/example/table',
-        component: _import('example/table/index'),
-        redirect: '/example/table/table',
-        name: 'Table',
-        icon: 'table',
-        children: [
-          { path: 'dynamictable', component: _import('example/table/dynamictable/index'), name: '动态table' },
-          { path: 'dragtable', component: _import('example/table/dragTable'), name: '拖拽table' },
-          { path: 'inline_edit_table', component: _import('example/table/inlineEditTable'), name: 'table内编辑' },
-          { path: 'table', component: _import('example/table/table'), name: '综合table' }
-        ]
-      },
-      { path: 'form/edit', icon: 'shouce', component: _import('example/form'), name: '编辑Form', meta: { isEdit: true }},
-      { path: 'form/create', icon: 'from', component: _import('example/form'), name: '创建Form' },
-      { path: 'tab/index', icon: 'tab', component: _import('example/tab/index'), name: 'Tab' }
+      { path: 'form/edit', icon: 'shouce', component: _import('example/form'), name: '合作方收费', meta: { isEdit: true }},
+      { path: 'form/create', icon: 'from', component: _import('example/form'), name: '散户计费' }
     ]
   },
   {
     path: '/error',
     component: Layout,
     redirect: 'noredirect',
-    name: '错误页面',
+    name: '工作管理',
     icon: '404',
     children: [
-      { path: '401', component: _import('errorPage/401'), name: '401' },
-      { path: '404', component: _import('errorPage/404'), name: '404' }
+      { path: 'form/create1', icon: 'from', component: _import('example/form'), name: '员工管理' },
+      { path: 'form/create2', icon: 'from', component: _import('example/form'), name: '车辆管理' },
+      { path: 'form/create3', icon: 'from', component: _import('example/form'), name: '排班管理' },
+      { path: 'form/create4', icon: 'from', component: _import('example/form'), name: '区域管理' },
+      { path: 'form/create5', icon: 'from', component: _import('example/form'), name: '请假替班' },
+      { path: 'form/create6', icon: 'from', component: _import('example/form'), name: '流程管理' }
     ]
   },
   {
     path: '/errlog',
     component: Layout,
     redirect: 'noredirect',
-    name: 'errlog',
+    name: '统计管理',
     icon: 'bug',
     noDropdown: true,
-    children: [{ path: 'log', component: _import('errlog/index'), name: '错误日志' }]
+    children: [
+      { path: 'log', component: _import('errlog/index'), name: '员工工作统计' },
+      { path: 'log', component: _import('errlog/index'), name: '车辆信息统计' },
+      { path: 'log', component: _import('errlog/index'), name: '订单统计' }
+
+    ]
   },
   {
     path: '/excel',
     component: Layout,
-    redirect: '/excel/download',
-    name: 'excel',
+    redirect: '/excel/index',
+    name: '日志审计',
     icon: 'EXCEL',
+    noDropdown: true,
     children: [
-      { path: 'download', component: _import('excel/index'), name: '导出excel' },
-      { path: 'download2', component: _import('excel/selectExcel'), name: '导出已选择项' }
+      { path: 'download', component: _import('excel/index'), name: '日志审计' }
     ]
   },
+  { path: '*', redirect: '/404', hidden: true },
   {
-    path: '/theme',
+    path: '/sysadmin',
     component: Layout,
-    redirect: 'noredirect',
-    name: 'theme',
-    icon: 'theme',
-    noDropdown: true,
-    children: [{ path: 'index', component: _import('theme/index'), name: '换肤' }]
-  },
-
-  { path: '*', redirect: '/404', hidden: true }
+    redirect: '/sysadmin/account/index',
+    name: '系统管理',
+    icon: 'zujian',
+    children: [
+      { path: 'account', component: _import('sysadmin/account/index'), name: '账户管理 ' },
+      { path: 'org', component: _import('sysadmin/org/index'), name: '组织管理' },
+      { path: 'role', component: _import('sysadmin/role/index'), name: '角色管理' },
+      { path: 'permission', component: _import('sysadmin/permission/index'), name: '权限管理' },
+      { path: 'resource', component: _import('sysadmin/resource/index'), name: '资源管理' }
+    ]
+  }
 ]

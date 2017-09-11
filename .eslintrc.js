@@ -12,7 +12,7 @@ module.exports = {
     extends: 'eslint:recommended',
     // required to lint *.vue files
     plugins: [
-        'html'
+        'html','jsx'
     ],
     // check if imports actually resolve
     'settings': {
@@ -139,6 +139,10 @@ module.exports = {
         'prefer-const': 2,
         'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
         'object-curly-spacing': [2, 'always', { objectsInObjects: false }],
-        'array-bracket-spacing': [2, 'never']
+        'array-bracket-spacing': [2, 'never'],
+      "jsx/uses-factory": [1, {"pragma": "JSX"}],
+      "jsx/factory-in-scope": [1, {"pragma": "JSX"}],
+      "jsx/mark-used-vars": 1,
+      "jsx/no-undef": 1
     }
 }

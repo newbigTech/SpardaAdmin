@@ -26,11 +26,11 @@ service.interceptors.request.use(config => {
 // respone拦截器
 service.interceptors.response.use(res => {
   // Do something with response data
-  console.log(res.data.result)
-  if (res.data.code < 400) {
+  console.log(res.data)
+  if (res.status < 400) {
     return res
   } else {
-    if (res.data.code === 401 || res.code === 50012 || res.code === 50014) {
+    if (res.status === 401 || res.status === 50012 || res.code === 50014) {
       MessageBox.confirm('你已被登出，可以取消继续留在该页面，或者重新登录', '确定登出', {
         confirmButtonText: '重新登录',
         cancelButtonText: '取消',

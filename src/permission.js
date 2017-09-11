@@ -25,7 +25,7 @@ router.beforeEach((to, from, next) => {
       console.log('=============')
       if (store.getters.roles.length === 0) { // 判断当前用户是否已拉取完user_info信息
         store.dispatch('GetUserInfo').then(res => { // 拉取user_info
-          const roles = res.data.result.role
+          const roles = res.data.role
           console.log(res)
           console.log('999999999999999')
           store.dispatch('GenerateRoutes', { roles }).then(() => { // 生成可访问的路由表

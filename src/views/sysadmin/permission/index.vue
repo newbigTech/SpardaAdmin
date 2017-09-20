@@ -116,6 +116,7 @@
         this.selectIconDialog = false
       },
       renderContent(h, { node, data, store }) {
+        // eslint-disable-next-line
         return (<span><span><span><i class={data.icon}></i> {node.label}</span></span></span>)
       },
       newAdd() {

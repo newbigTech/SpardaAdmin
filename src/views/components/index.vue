@@ -1,7 +1,44 @@
+<!--<template>-->
+  <!--<baidu-map class="map" :center="{lng: 116.404, lat: 39.915}" :zoom="15" :scroll-wheel-zoom="true">-->
+    <!--&lt;!&ndash;<bm-polyline :path="polylinePath" stroke-color="blue" :stroke-opacity="0.5" :stroke-weight="2" :editing="true" @lineupdate="updatePolylinePath"></bm-polyline>&ndash;&gt;-->
+  <!--</baidu-map>-->
+<!--</template>-->
+
+<!--<script>-->
+  <!--export default {-->
+    <!--data() {-->
+      <!--return {-->
+        <!--polylinePath: [-->
+          <!--{ lng: 116.404, lat: 39.915 },-->
+          <!--{ lng: 116.405, lat: 39.920 },-->
+          <!--{ lng: 116.423493, lat: 39.907445 }-->
+        <!--]-->
+      <!--}-->
+    <!--},-->
+    <!--methods: {-->
+      <!--updatePolylinePath(e) {-->
+        <!--this.polylinePath = e.target.getPath()-->
+      <!--},-->
+      <!--addPolylinePoint() {-->
+        <!--this.polylinePath.push({ lng: 116.404, lat: 39.915 })-->
+      <!--}-->
+    <!--}-->
+  <!--}-->
+<!--</script>-->
 <template>
-  <div class="components-container">
-    <code>这里暂时列出了自己在项目中用到的组件和一些自己封装的组件，如有补充可以提<a target='_blank' href='https://github.com/PanJiaChen/vue-element-admin/issues'> issue </a><br/>
-    我个人崇尚自己封装组件，因为很多组件会和业务后高度的耦合，而且第三方封装的组件灵活性可控性都不高，如有需要可以看楼主之前写过的一篇<a href='https://segmentfault.com/a/1190000009090836' target='_blank'>文章</a>
-    </code>
-  </div>
+  <baidu-map class="map" center="杭州" :zoom="15" :scroll-wheel-zoom="true">
+    <bm-scale anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-scale>
+    <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
+  <bm-map-type :map-types="['BMAP_NORMAL_MAP', 'BMAP_HYBRID_MAP']" anchor="BMAP_ANCHOR_TOP_LEFT"></bm-map-type>
+    <!--<bm-label content="我爱北京天安门" :position="{lng: 116.404, lat: 39.915}" :labelStyle="{color: 'red', fontSize : '24px'}" title="Hover me"/>-->
+
+
+  </baidu-map>
 </template>
+
+<style>
+.map {
+width: 100%;
+height: 900px;
+}
+</style>

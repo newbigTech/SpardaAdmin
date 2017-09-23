@@ -87,7 +87,7 @@ export const asyncRouterMap = [
     children: [
       { path: 'form/create1', icon: 'from', component: _import('example/form'), name: '员工管理' },
       { path: 'form/create2', icon: 'from', component: _import('example/form'), name: '车辆管理' },
-      { path: 'form/create3', icon: 'from', component: _import('example/form'), name: '排班管理' },
+      { path: 'form/create3', icon: 'from', component: _import('calendar/index'), name: '排班管理' },
       { path: 'form/create4', icon: 'from', component: _import('example/form'), name: '区域管理' },
       { path: 'form/create5', icon: 'from', component: _import('example/form'), name: '请假替班' },
       { path: 'form/create6', icon: 'from', component: _import('example/form'), name: '流程管理' }

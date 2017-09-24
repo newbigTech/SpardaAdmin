@@ -46,76 +46,76 @@ export default new Router({
 
 export const asyncRouterMap = [
   {
-    path: '/components',
+    path: '/schedule',
     component: Layout,
-    redirect: '/components/index',
+    redirect: '/schedule/index',
     name: '调度中心',
     icon: 'zujian',
     children: [
-      { path: 'index', icon: 'shouce', component: _import('components/index'), name: '首页实时地图 ' },
-      { path: 'tinymce', icon: 'shouce', component: _import('components/tinymce'), name: '订单列表' }
+      { path: 'map', icon: 'zujian', component: _import('schedule/map'), name: '首页实时地图 ' },
+      { path: 'orderlist', icon: 'zujian', component: _import('schedule/orderlist'), name: '订单列表' }
     ]
   },
   {
-    path: '/charts',
+    path: '/users',
     component: Layout,
-    redirect: '/charts/index',
+    redirect: '/users/invoice',
     name: '用户管理',
     icon: 'tubiao',
     children: [
-      { path: 'index', icon: 'from', component: _import('charts/keyboard'), name: '发货方' },
-      { path: 'keyboard2', icon: 'from', component: _import('charts/keyboard2'), name: '收货方' }
+      { path: 'invoice', icon: 'tubiao', component: _import('users/invoice'), name: '发货方' },
+      { path: 'receiver', icon: 'tubiao', component: _import('users/receiver'), name: '收货方' }
     ]
   },
   {
-    path: '/example',
+    path: '/fee',
     component: Layout,
     redirect: 'noredirect',
     name: '计费管理',
     icon: 'zonghe',
     children: [
-      { path: 'form/edit', icon: 'shouce', component: _import('example/form'), name: '合作方收费', meta: { isEdit: true }},
-      { path: 'form/create', icon: 'from', component: _import('example/form'), name: '散户计费' }
+      { path: 'partner', icon: 'zonghe', component: _import('fee/partner'), name: '合作方收费' },
+      { path: 'retail', icon: 'zonghe', component: _import('fee/retail'), name: '散户计费' }
     ]
   },
   {
-    path: '/error',
+    path: '/work',
     component: Layout,
     redirect: 'noredirect',
     name: '工作管理',
     icon: '404',
     children: [
-      { path: 'form/create1', icon: 'from', component: _import('example/form'), name: '员工管理' },
-      { path: 'form/create2', icon: 'from', component: _import('example/form'), name: '车辆管理' },
-      { path: 'form/create3', icon: 'from', component: _import('calendar/index'), name: '排班管理' },
-      { path: 'form/create4', icon: 'from', component: _import('example/form'), name: '区域管理' },
-      { path: 'form/create5', icon: 'from', component: _import('example/form'), name: '请假替班' },
-      { path: 'form/create6', icon: 'from', component: _import('example/form'), name: '流程管理' }
+      { path: 'employee', icon: '404', component: _import('work/employee/index'), name: '员工管理' },
+      { path: 'car', icon: '404', component: _import('work/car/index'), name: '车辆管理' },
+      { path: 'schedule', icon: '404', component: _import('work/schedule/index'), name: '排班管理' },
+      { path: 'region', icon: '404', component: _import('work/region/index'), name: '区域管理' },
+      { path: 'leave', icon: '404', component: _import('work/leave/index'), name: '请假替班' },
+      { path: 'flow', icon: '404', component: _import('work/flow/index'), name: '流程管理' }
     ]
   },
   {
-    path: '/errlog',
+    path: '/statistics',
     component: Layout,
     redirect: 'noredirect',
     name: '统计管理',
     icon: 'bug',
-    noDropdown: true,
+    noDropdown: false,
     children: [
-      { path: 'log', component: _import('errlog/index'), name: '员工工作统计' },
-      { path: 'log', component: _import('errlog/index'), name: '车辆信息统计' },
-      { path: 'log', component: _import('errlog/index'), name: '订单统计' }
+      { path: 'employeework', icon: 'bug', component: _import('statistics/employeework'), name: '员工工作统计' },
+      { path: 'car', icon: 'bug', component: _import('statistics/car'), name: '车辆信息统计' },
+      { path: 'order', icon: 'bug', component: _import('statistics/order'), name: '订单统计' }
 
     ]
   },
   {
-    path: '/excel',
+    path: '/log',
     component: Layout,
     redirect: '/excel/index',
     name: '日志审计',
     icon: 'EXCEL',
     noDropdown: true,
     children: [
-      { path: 'download', component: _import('excel/index'), name: '日志审计' }
+      { path: 'audit', icon: 'EXCEL', component: _import('excel/index'), name: '日志审计' }
     ]
   },
   { path: '*', redirect: '/404', hidden: true },
@@ -126,11 +126,11 @@ export const asyncRouterMap = [
     name: '系统管理',
     icon: 'zujian',
     children: [
-      { path: 'account', component: _import('sysadmin/account/index'), name: '账户管理 ' },
-      { path: 'org', component: _import('sysadmin/org/index'), name: '组织管理' },
-      { path: 'role', component: _import('sysadmin/role/index'), name: '角色管理' },
-      { path: 'permission', component: _import('sysadmin/permission/index'), name: '权限管理' },
-      { path: 'resource', component: _import('sysadmin/resource/index'), name: '资源管理' }
+      { path: 'account', icon: 'zujian', component: _import('sysadmin/account/index'), name: '账户管理 ' },
+      { path: 'org', icon: 'zujian', component: _import('sysadmin/org/index'), name: '组织管理' },
+      { path: 'role', icon: 'zujian', component: _import('sysadmin/role/index'), name: '角色管理' },
+      { path: 'permission', icon: 'zujian', component: _import('sysadmin/permission/index'), name: '权限管理' },
+      { path: 'resource', icon: 'zujian', component: _import('sysadmin/resource/index'), name: '资源管理' }
     ]
   }
 ]

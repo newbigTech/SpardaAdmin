@@ -1,219 +1,334 @@
 <template>
+  <div class="app-container calendar-list-container">
+    <div class="filter-container">
+      <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="姓名" v-model="listQuery.name">
+      </el-input>
+      <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="手机号" v-model="listQuery.mobile">
+      </el-input>
 
-  <imp-panel>
-    <h3 class='box-title' slot='header' style='width: 100%'>
-      <el-row style='width: 100%'>
-        <el-col :span='12'>
-          <router-link :to='{ path: "addAccount"}'>
-            <el-button type='primary' icon='plus'>新增</el-button>
-          </router-link>
-        </el-col>
-        <el-col :span='12'>
-          <div class='el-input' style='width: 200px; float: right'>
-            <i class='el-input__icon el-icon-search'></i>
-            <input type='text' placeholder='输入用户名称' v-model='searchKey' @keyup.enter='search($event)'
-                   class='el-input__inner'>
-          </div>
-        </el-col>
-      </el-row>
-    </h3>
-    <div slot='body'>
-      <el-table
-        :data='tableData.rows'
-        border
-        style='width: 100%'
-        v-loading='listLoading'
-        @selection-change='handleSelectionChange'>
-        <el-table-column
-          prop='id'
-          type='selection'
-          width='45'>
-        </el-table-column>
-        <el-table-column
-          prop='name'
-          label='名称'>
-        </el-table-column>
-        <el-table-column
-          prop='loginName'
-          label='登录用户名'>
-        </el-table-column>
-        <el-table-column
-          prop='photo'
-          label='照片'>
-        </el-table-column>
-        <el-table-column
-          prop='email'
-          label='邮箱'>
-        </el-table-column>
-        <el-table-column
-          prop='status'
-          label='状态'>
-        </el-table-column>
-        <el-table-column label='操作' width='285'>
-          <template scope='scope'>
-            <el-button
-              size='small'
-              type='default'
-              icon='edit'
-              @click='handleEdit(scope.$index, scope.row)'>编辑
-            </el-button>
-            <el-button
-              size='small'
-              type='info'
-              icon='setting'
-              @click='handleRoleConfig(scope.$index, scope.row)'>配置角色
-            </el-button>
-            <el-button
-              size='small'
-              type='danger'
-              @click='handleDelete(scope.$index, scope.row)'>删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.status" placeholder="状态">
+        <el-option v-for="item in  statusOption" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key">
+        </el-option>
+      </el-select>
 
-      <el-pagination
-        @size-change='handleSizeChange'
-        @current-change='handleCurrentChange'
-        :current-page='tableData.pagination.pageNo'
-        :page-sizes='[5, 10, 20]'
-        :page-size='tableData.pagination.pageSize'
-        layout='total, sizes, prev, pager, next, jumper'
-        :total='tableData.pagination.total'>
-      </el-pagination>
-
-      <el-dialog title='配置用户角色' v-model='dialogVisible' size='tiny'>
-        <div class='select-tree'>
-          <el-scrollbar
-            tag='div'
-            class='is-empty'
-            wrap-class='el-select-dropdown__wrap'
-            view-class='el-select-dropdown__list'>
-            <el-tree
-              ref='roleTree'
-              :data='roleTree'
-              show-checkbox
-              check-strictly
-              node-key='id' v-loading='dialogLoading'
-              :props='defaultProps'>
-            </el-tree>
-          </el-scrollbar>
-        </div>
-        <span slot='footer' class='dialog-footer'>
-          <el-button @click='dialogVisible = false'>取 消</el-button>
-          <el-button type='primary' @click='configUserRoles'>确 定</el-button>
-          </span>
-      </el-dialog>
+      <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">搜索</el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="edit">添加</el-button>
+      <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出</el-button>
     </div>
 
+    <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row style="width: 100%">
 
-  </imp-panel>
+      <el-table-column prop='id' type='selection' width='45'>
+      </el-table-column>
+
+      <el-table-column min-width="70px" prop='name' label="姓名">
+      </el-table-column>
+      <el-table-column prop='mobile' label='手机号'>
+      </el-table-column>
+      <el-table-column prop='avatar' label='头像' width="80">
+        <template scope="scope">
+          <img :src="scope.row.avatar" width="50" height="50"/>
+        </template>
+      </el-table-column>
+      <el-table-column prop='email' label='邮箱'>
+      </el-table-column>
+      <el-table-column prop='status' label='状态' width='100'>
+        <template scope="scope">
+          <p v-if = 'scope.row.status == 0'>正常</p>
+          <p v-if = 'scope.row.status == 1'>已禁用</p>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="操作" width="285">
+        <template scope="scope">
+          <el-button
+            size='small'
+            type='default'
+            icon='edit'
+            @click="handleUpdate(scope.row)">编辑
+          </el-button>
+          <el-button
+            size='small'
+            type='info'
+            icon='setting'
+            @click='handleRoleConfig(scope.$index, scope.row)'>配置角色
+          </el-button>
+          <el-button
+            size='small'
+            type='danger'
+            @click='handleDelete(scope.row.userId, 1-scope.row.status)'>
+            <a v-if = 'scope.row.status == 0'>禁用</a>
+            <a v-if = 'scope.row.status == 1'>启用</a>
+          </el-button>
+        </template>
+      </el-table-column>
+
+    </el-table>
+
+    <div v-show="!listLoading" class="pagination-container">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="listQuery.page"
+        :page-sizes="[20]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
+    </div>
+
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <el-form class="small-space" :model="temp" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
+
+        <el-form-item label="姓名">
+          <el-input v-model="temp.name"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input v-model="temp.mobile"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="temp.email"></el-input>
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="temp.password" type="password"></el-input>
+        </el-form-item>
+        <!--<el-form-item label="头像">-->
+          <!--<template>-->
+            <!--<img :src="temp.avatar" width="50" height="50"/>-->
+          <!--</template>-->
+        <!--</el-form-item>-->
+        <el-form-item label="状态">
+          <el-select class="filter-item" v-model="temp.status" placeholder="请选择">
+            <el-option v-for="item in  statusOption" :key="item.key" :label="item.display_name" :value="item.key">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="create">确 定</el-button>
+        <el-button v-else type="primary" @click="update">确 定</el-button>
+      </div>
+    </el-dialog>
+
+  </div>
 </template>
 
 <script>
-  import panel from '../../../components/panel.vue'
-  import * as api from '../../../api/api'
-//  import testData from '../../../../static/data.json'
+import waves from '@/directive/waves/index.js' // 水波纹指令
+import { parseTime } from '@/utils'
+import * as api from '../../../api/api'
+import fetch from '@/utils/fetch'
 
-  export default {
-    components: {
-      'imp-panel': panel
-    },
-    data() {
-      return {
-        currentRow: {},
-        dialogVisible: false,
-        dialogLoading: false,
-        defaultProps: {
-          children: 'children',
-          label: 'name',
-          id: 'id'
-        },
-        roleTree: [],
-        listLoading: false,
-        searchKey: '',
-        tableData: {
-          pagination: {
-            total: 0,
-            pageNo: 1,
-            pageSize: 10,
-            parentId: 0
-          },
-          rows: []
-        }
+const statusOption = [
+      { key: '1', display_name: '禁用' },
+      { key: '0', display_name: '正常' }
+]
+
+// arr to obj
+const statusKeyValue = statusOption.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
+export default {
+  name: 'account',
+  directives: {
+    waves
+  },
+  data() {
+    return {
+      list: null,
+      total: null,
+      listLoading: true,
+      listQuery: {
+        page: 1,
+        limit: 20,
+        name: '',
+        mobile: '',
+        status: ''
+      },
+      temp: {
+        id: '',
+        name: '',
+        mobile: '',
+        email: '',
+        status: ''
+      },
+      importanceOptions: [1, 2, 3],
+      statusOption,
+      sortOptions: [{ label: '按ID升序列', key: '+id' }, { label: '按ID降序', key: '-id' }],
+      statusOptions: ['published', 'draft', 'deleted'],
+      dialogFormVisible: false,
+      dialogStatus: '',
+      textMap: {
+        update: '编辑',
+        create: '创建'
+      },
+      dialogPvVisible: false,
+      pvData: [],
+      showAuditor: false,
+      tableKey: 0
+    }
+  },
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        published: 'success',
+        draft: 'gray',
+        deleted: 'danger'
       }
+      return statusMap[status]
     },
-    methods: {
-      search(target) {
-        this.loadData()
-      },
-      handleSelectionChange(val) {
-
-      },
-      handleRoleConfig(index, row) {
-        this.currentRow = row
-        this.dialogVisible = true
-        if (this.roleTree.length <= 0) {
-          this.service.get(api.TEST_DATA + '?selectChildren=true')
-            .then(res => {
-              this.roleTree = res.data.roleList
-            })
-        }
-        this.service.get(api.SYS_USER_ROLE + '?id=' + row.id)
-          .then(res => {
-            this.$refs.roleTree.setCheckedKeys(res.data)
-          })
-      },
-      configUserRoles() {
-        const checkedKeys = this.$refs.roleTree.getCheckedKeys()
-        this.service.get(api.SYS_SET_USER_ROLE + '?userId=' + this.currentRow.id + '&roleIds=' + checkedKeys.join(', '))
-          .then(res => {
-            this.$message('修改成功')
-            this.dialogVisible = false
-          })
-      },
-      handleSizeChange(val) {
-        this.tableData.pagination.pageSize = val
-        this.loadData()
-      },
-      handleCurrentChange(val) {
-        this.tableData.pagination.pageNo = val
-        this.loadData()
-      },
-      handleEdit(index, row) {
-        this.$router.push({ path: 'addAccount', query: { id: row.id }})
-      },
-      handleDelete(index, row) {
-        this.service.get(api.SYS_USER_DELETE + '?userIds=' + row.id).then(res => {
-          this.loadData()
+    typeFilter(type) {
+      return statusKeyValue[type]
+    }
+  },
+  created() {
+    this.getList()
+  },
+  methods: {
+    getList() {
+      this.listLoading = true
+      fetch(api.SYS_ACCOUNT_LIST + '?name=' + this.listQuery.name + '&mobile=' + this.listQuery.mobile +
+        '&status=' + this.listQuery.status + '&pageSize=' +
+        this.listQuery.limit + '&pageNum=' + this.listQuery.page)
+        .then(res => {
+          this.list = res.data.result.list
+          this.total = res.data.result.total
+          this.listLoading = false
         })
-      },
-      loadData() {
-        var d = { 'offset': 0, 'limit': 2147483647, 'total': 1, 'size': 10, 'pages': 1, 'current': 1, 'searchCount': true, 'optimizeCount': false, 'orderByField': null, 'records': [
-          { 'id': 1, 'delFlag': 0, 'companyId': 1, 'officeId': 2, 'loginName': 'admin', 'password': '',
-            'no': '0001', 'name': '系统管理员', 'email': '1111@126.com', 'phone': '731', 'mobile': '13769999998',
-            'userType': '1', 'photo': null, 'loginIp': '127.0.0.1', 'loginDate': 1453188598000, 'loginFlag': '1',
-            'remarks': '最高管理员', 'status': 1, 'token': null }], 'condition': {}, 'asc': true, 'offsetCurrent': 0
+    },
+    handleFilter() {
+      this.listQuery.page = 1
+      this.getList()
+    },
+    handleSizeChange(val) {
+      this.listQuery.limit = val
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.listQuery.page = val
+      this.getList()
+    },
+    timeFilter(time) {
+      if (!time[0]) {
+        this.listQuery.start = undefined
+        this.listQuery.end = undefined
+        return
+      }
+      this.listQuery.start = parseInt(+time[0] / 1000)
+      this.listQuery.end = parseInt((+time[1] + 3600 * 1000 * 24) / 1000)
+    },
+    handleModifyStatus(row, status) {
+      this.$message({
+        message: '操作成功',
+        type: 'success'
+      })
+      row.status = status
+    },
+    handleCreate() {
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
+    },
+    handleUpdate(row) {
+      this.temp = Object.assign({}, row)
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+    },
+    handleDelete(userId, status) {
+      this.listLoading = true
+      fetch({
+        url: api.SYS_ACCOUNT_DELETE,
+        method: 'post',
+        data: {
+          userId: userId,
+          status: status
         }
-        this.tableData.rows = d.records
-        this.tableData.pagination.total = d.total
-        fetch(api.SYS_USER_PAGE + '?key=' + this.searchKey + '&pageSize=' +
-          this.tableData.pagination.pageSize + '&pageNo=' + this.tableData.pagination.pageNo)
-          .then(res => {
-            console.log(res)
-//            this.tableData.rows = res.data.records
-//            this.tableData.pagination.total = res.data.total
-          })
+      })
+        .then(res => {
+          this.list = res.data.result.list
+          this.total = res.data.result.total
+          this.listLoading = false
+        })
+      this.$notify({
+        title: '成功',
+        message: '删除成功',
+        type: 'success',
+        duration: 200
+      })
+      const index = this.list.indexOf(userId)
+      this.list.splice(index, 1)
+    },
+    create() {
+      this.list.unshift(this.temp)
+      fetch({
+        url: api.SYS_ACCOUNT_ADD,
+        method: 'post',
+        data: this.temp
+      })
+        .then(res => {
+          this.list = res.data.result.list
+          this.total = res.data.result.total
+          this.listLoading = false
+        })
+      this.dialogFormVisible = false
+      this.$notify({
+        title: '成功',
+        message: '创建成功',
+        type: 'success',
+        duration: 2000
+      })
+    },
+    update() {
+      for (const v of this.list) {
+        if (v.id === this.temp.id) {
+          const index = this.list.indexOf(v)
+          this.list.splice(index, 1, this.temp)
+          break
+        }
+      }
+      fetch({
+        url: api.SYS_ACCOUNT_UPDATE,
+        method: 'post',
+        data: this.temp
+      })
+        .then(res => {
+          this.list = res.data.result.list
+          this.total = res.data.result.total
+          this.listLoading = false
+        })
+      this.dialogFormVisible = false
+      this.$notify({
+        title: '成功',
+        message: '更新成功',
+        type: 'success',
+        duration: 2000
+      })
+    },
+    resetTemp() {
+      this.temp = {
+        id: '',
+        name: '',
+        mobile: '',
+        email: '',
+        password: '',
+        status: '0'
       }
     },
-    created() {
-      this.loadData()
+    handleDownload() {
+      require.ensure([], () => {
+        const { export_json_to_excel } = require('vendor/Export2Excel')
+        const tHeader = ['时间', '地区', '类型', '标题', '重要性']
+        const filterVal = ['timestamp', 'province', 'type', 'title', 'importance']
+        const data = this.formatJson(filterVal, this.list)
+        export_json_to_excel(tHeader, data, 'table数据')
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+        if (j === 'timestamp') {
+          return parseTime(v[j])
+        } else {
+          return v[j]
+        }
+      }))
     }
   }
+}
 </script>
-<style>
-  .el-pagination {
-    float: right;
-    margin-top: 15px
-  }
-</style>

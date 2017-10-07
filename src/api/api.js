@@ -46,3 +46,8 @@ export const UPLOAD_FORM_FILE_BATCH = CONTEXT + '/upload/batch'
 export const MSG_TOP_TEN = CONTEXT + '/msg/topTen'
 export const TEST_DATA = CONTEXT + '/static/data.json'
 
+export const SYS_ACCOUNT_LIST = '/sysadmin/list'
+export const SYS_ACCOUNT_GET = '/sysadmin/get'
+export const SYS_ACCOUNT_ADD = '/sysadmin/add'
+export const SYS_ACCOUNT_UPDATE = '/sysadmin/update'
+export const SYS_ACCOUNT_DELETE = '/sysadmin/delete'

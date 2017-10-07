@@ -34,7 +34,7 @@ export const constantRouterMap = [
     redirect: '/introduction/index',
     icon: 'xinrenzhinan',
     noDropdown: true,
-    children: [{ path: 'index', component: _import('introduction/index'), name: 'XXXX' }]
+    children: [{ path: 'index', component: _import('introduction/index'), name: '拼速达' }]
   }
 ]
 
@@ -111,7 +111,7 @@ export const asyncRouterMap = [
     path: '/log',
     component: Layout,
     redirect: '/excel/index',
-    name: '日志审计',
+    name: '',
     icon: 'EXCEL',
     noDropdown: true,
     children: [
@@ -129,7 +129,7 @@ export const asyncRouterMap = [
       { path: 'account', icon: 'zujian', component: _import('sysadmin/account/index'), name: '账户管理 ' },
       { path: 'org', icon: 'zujian', component: _import('sysadmin/org/index'), name: '组织管理' },
       { path: 'role', icon: 'zujian', component: _import('sysadmin/role/index'), name: '角色管理' },
-      { path: 'permission', icon: 'zujian', component: _import('sysadmin/permission/index'), name: '权限管理' },
+      // { path: 'permission', icon: 'zujian', component: _import('sysadmin/permission/index'), name: '权限管理' },
       { path: 'resource', icon: 'zujian', component: _import('sysadmin/resource/index'), name: '资源管理' }
     ]
   }

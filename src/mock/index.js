@@ -1,5 +1,5 @@
 import Mock from 'mockjs'
-import loginAPI from './login'
+// import loginAPI from './login'
 import articleAPI from './article'
 // import roleAPI from './role'
 import remoteSearchAPI from './remoteSearch'
@@ -9,9 +9,9 @@ Mock.setup({
 })
 
 // 登录相关
-Mock.mock(/\/useradmin\/doLogin/, 'post', loginAPI.loginByUsername)
-Mock.mock(/\/useradmin\/logout/, 'post', loginAPI.logout)
-Mock.mock(/\/useradmin\/get\.*/, 'get', loginAPI.getUserInfo)
+// Mock.mock(/\/useradmin\/doLogin/, 'post', loginAPI.loginByUsername)
+// Mock.mock(/\/useradmin\/logout/, 'post', loginAPI.logout)
+// Mock.mock(/\/useradmin\/get\.*/, 'get', loginAPI.getUserInfo)
 
 // 文章相关
 Mock.mock(/\/article\/list/, 'get', articleAPI.getList)

@@ -1,283 +1,300 @@
 <template>
+  <div class="app-container calendar-list-container">
+    <div class="filter-container">
+      <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="姓名" v-model="listQuery.name">
+      </el-input>
+      <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="手机号" v-model="listQuery.mobile">
+      </el-input>
 
-  <imp-panel>
-    <h3 class='box-title' slot='header' style='width: 100%;'>
-      <el-button type='primary' icon='plus' @click='newAdd'>新增</el-button>
-      <el-button type='danger' icon='delete' @click='batchDelete'>删除</el-button>
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.status" placeholder="状态">
+        <el-option v-for="item in  statusOption" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key">
+        </el-option>
+      </el-select>
 
-    </h3>
-    <el-row slot='body' :gutter='24' style='margin-bottom: 20px;'>
-      <el-col :span='6' :xs='24' :sm='24' :md='6' :lg='6' style='margin-bottom: 20px;'>
-        <el-tree v-if='roleTree'
-                 :data='roleTree'
-                 ref='roleTree'
-                 show-checkbox
-                 highlight-current
-                 :render-content='renderContent'
-                 @node-click='handleNodeClick' clearable node-key='id' :props='defaultProps'></el-tree>
-      </el-col>
-      <el-col :span='18' :xs='24' :sm='24' :md='18' :lg='18'>
-        <el-card class='box-card'>
-          <div class='text item'>
-            <el-form :model='form' ref='form'>
-              <el-form-item label='父级' :label-width='formLabelWidth'>
-                <!--<el-input v-model='form.parentId' auto-complete='off'></el-input>-->
-                <el-select-tree v-model='form.parentId' :treeData='roleTree' :propNames='defaultProps' clearable
-                                placeholder='请选择父级'>
-                </el-select-tree>
-              </el-form-item>
-              <el-form-item label='名称' :label-width='formLabelWidth'>
-                <el-input v-model='form.name' auto-complete='off'></el-input>
-              </el-form-item>
-              <el-form-item label='英文' :label-width='formLabelWidth'>
-                <el-input v-model='form.enName' auto-complete='off'></el-input>
-              </el-form-item>
-              <el-form-item label='是否生效' :label-width='formLabelWidth'>
-                <el-radio class='radio' v-model='form.usable' label='1'>是</el-radio>
-                <el-radio class='radio' v-model='form.usable' label='0'>否</el-radio>
-              </el-form-item>
-              <el-form-item label='排序' :label-width='formLabelWidth'>
-                <el-slider v-model='form.sort'></el-slider>
-              </el-form-item>
-              <el-form-item label='' :label-width='formLabelWidth'>
-                <el-button type='primary' @click='onSubmit' v-text="form.id?'修改':'新增'"></el-button>
-                <el-button type='info' @click='settingResource($event,form.id)' icon='setting' v-show='form.id && form.id!=null'>配置资源
-                </el-button>
-                <el-button type='danger' @click='deleteSelected' icon='delete' v-show='form.id && form.id!=null'>删除
-                </el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-        </el-card>
+      <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">搜索</el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="edit">添加</el-button>
+      <!--<el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出</el-button>-->
+    </div>
 
-        <el-dialog title='配置资源' v-model='dialogVisible' size='tiny'>
-          <div class='select-tree'>
-          <el-scrollbar
-            tag='div'
-            class='is-empty'
-            wrap-class='el-select-dropdown__wrap'
-            view-class='el-select-dropdown__list'>
-          <el-tree
-            :data='resourceTree'
-            ref='resourceTree'
-            show-checkbox
-            check-strictly
-            node-key='id'
-            v-loading='dialogLoading'
-            :props='defaultProps'>
-          </el-tree>
-          </el-scrollbar>
-          </div>
-          <span slot='footer' class='dialog-footer'>
-          <el-button @click='dialogVisible = false'>取 消</el-button>
-          <el-button type='primary' @click='configRoleResources'>确 定</el-button>
-          </span>
-        </el-dialog>
-      </el-col>
-    </el-row>
-  </imp-panel>
+    <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row style="width: 100%">
 
+      <el-table-column prop='id' type='selection' width='45'>
+      </el-table-column>
+
+      <el-table-column min-width="70px" prop='name' label="角色名称">
+      </el-table-column>
+      <el-table-column prop='mobile' label='所属组织'>
+      </el-table-column>
+      <el-table-column prop='status' label='是否公共' width='100'>
+      </el-table-column>
+      <el-table-column prop='status' label='创建时间' width='100'>
+      </el-table-column>
+      <el-table-column prop='status' label='修改时间' width='100'>
+      </el-table-column>
+      <el-table-column align="center" label="操作" width="285">
+        <template scope="scope">
+          <el-button
+            size='small'
+            type='default'
+            icon='edit'
+            @click="handleUpdate(scope.row)">编辑
+          </el-button>
+        </template>
+      </el-table-column>
+
+    </el-table>
+
+    <div v-show="!listLoading" class="pagination-container">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="listQuery.page"
+        :page-sizes="[20]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
+    </div>
+
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <el-form class="small-space" :model="temp" label-position="left" label-width="70px" style='width: 400px; margin-left:50px;'>
+
+        <el-form-item label="姓名">
+          <el-input v-model="temp.name"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input v-model="temp.mobile"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="temp.email"></el-input>
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="temp.password" type="password"></el-input>
+        </el-form-item>
+        <!--<el-form-item label="头像">-->
+          <!--<template>-->
+            <!--<img :src="temp.avatar" width="50" height="50"/>-->
+          <!--</template>-->
+        <!--</el-form-item>-->
+        <el-form-item label="状态">
+          <el-select class="filter-item" v-model="temp.status" placeholder="请选择">
+            <el-option v-for="item in  statusOption" :key="item.key" :label="item.display_name" :value="item.key">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="create">确 定</el-button>
+        <el-button v-else type="primary" @click="update">确 定</el-button>
+      </div>
+    </el-dialog>
+
+  </div>
 </template>
+
 <script>
-  import panel from '../../../components/panel.vue'
-  import selectTree from '../../../components/selectTree.vue'
-  import treeter from '../../../components/treeter'
+import waves from '@/directive/waves/index.js' // 水波纹指令
+import { parseTime } from '@/utils'
+import * as api from '../../../api/api'
+import fetch from '@/utils/fetch'
 
-  import * as api from '../../../api/api'
-  import { getMockData } from '../../../api/role'
+const statusOption = [
+      { key: '1', display_name: '禁用' },
+      { key: '0', display_name: '正常' }
+]
 
-  export default {
-    mixins: [treeter],
-    components: {
-      'imp-panel': panel,
-      'el-select-tree': selectTree
-    },
-    data() {
-      return {
-        dialogLoading: false,
-        dialogVisible: false,
-        formLabelWidth: '100px',
-        defaultProps: {
-          children: 'children',
-          label: 'name',
-          id: 'id'
-        },
-        roleTree: [],
-        resourceTree: [],
-        maxId: 700000,
-        form: {
-          id: null,
-          parentId: null,
-          name: '',
-          enName: '',
-          sort: 0,
-          usable: '1'
-        }
+// arr to obj
+const statusKeyValue = statusOption.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
+export default {
+  name: 'account',
+  directives: {
+    waves
+  },
+  data() {
+    return {
+      list: null,
+      total: null,
+      listLoading: true,
+      listQuery: {
+        page: 1,
+        limit: 20,
+        name: '',
+        mobile: '',
+        status: ''
+      },
+      temp: {
+        id: '',
+        name: '',
+        mobile: '',
+        email: '',
+        status: ''
+      },
+      importanceOptions: [1, 2, 3],
+      statusOption,
+      sortOptions: [{ label: '按ID升序列', key: '+id' }, { label: '按ID降序', key: '-id' }],
+      statusOptions: ['published', 'draft', 'deleted'],
+      dialogFormVisible: false,
+      dialogStatus: '',
+      textMap: {
+        update: '编辑',
+        create: '创建'
+      },
+      dialogPvVisible: false,
+      pvData: [],
+      showAuditor: false,
+      tableKey: 0
+    }
+  },
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        published: 'success',
+        draft: 'gray',
+        deleted: 'danger'
       }
+      return statusMap[status]
     },
-    methods: {
-      configRoleResources() {
-        const checkedKeys = this.$refs.resourceTree.getCheckedKeys()
-        fetch({
-          url: api.SYS_SET_ROLE_RESOURCE + '?roleId=' + this.form.id + '&resourceIds=' + checkedKeys.join(','),
-          method: 'get'
-        }).then(
-            res => {
-              console.log(res)
-              this.$message('修改成功')
-              this.dialogVisible = false
-            }
-          )
-      },
-      handleNodeClick(data) {
-        this.form = data
-      },
-      newAdd() {
-        this.form = {
-          id: null,
-          parentId: null,
-          name: '',
-          enName: '',
-          sort: 0,
-          usable: '1',
-          remarks: ''
-        }
-      },
-      batchDelete() {
-        var checkKeys = this.$refs.roleTree.getCheckedKeys()
-        if (checkKeys == null || checkKeys.length <= 0) {
-          this.$message.warning('请选择要删除的资源')
-          return
-        }
-        this.$confirm('确定删除?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          fetch({
-            url: api.SYS_ROLE_DELETE + '?roleIds=' + checkKeys.join(','),
-            method: 'get'
-          }).then(res => {
-            this.$message('操作成功')
-            this.load()
-          }).catch(e => {
-            this.$message('操作成功')
-            console.log(checkKeys)
-            this.batchDeleteFromTree(this.roleTree, checkKeys)
-          })
+    typeFilter(type) {
+      return statusKeyValue[type]
+    }
+  },
+  created() {
+    this.getList()
+  },
+  methods: {
+    getList() {
+      this.listLoading = true
+      fetch(api.SYS_ACCOUNT_LIST + '?name=' + this.listQuery.name + '&mobile=' + this.listQuery.mobile +
+        '&status=' + this.listQuery.status + '&pageSize=' +
+        this.listQuery.limit + '&pageNum=' + this.listQuery.page)
+        .then(res => {
+          this.list = res.data.result.list
+          this.total = res.data.result.total
+          this.listLoading = false
         })
-      },
-      onSubmit() {
-        this.form.parentId = this.form.parentId
-        this.$http.post(api.SYS_ROLE_ADD, this.form)
-          .then(res => {
-            this.form.id = res.data.id
-            this.appendTreeNode(this.roleTree, res.data)
-          }).catch(e => {
-            this.maxId += 1
-            this.$message('操作成功')
-            this.form.id = this.maxId
-            const ddd = {
-              id: this.form.id,
-              name: this.form.name,
-              sort: this.form.sort,
-              enName: this.form.enName,
-              parentId: this.form.parentId,
-              usable: this.form.usable,
-              children: []
-            }
-            this.appendTreeNode(this.roleTree, ddd)
-            this.roleTree.push({})
-            this.roleTree.pop()
-          })
-      },
-      deleteSelected(id) {
-        this.$http.get(api.SYS_ROLE_DELETE + '?roleIds=' + id)
-          .then(res => {
-            this.$message('操作成功')
-            this.deleteFromTree(this.roleTree, id)
-            this.newAdd()
-          }).catch(e => {
-            this.$message('操作成功')
-            this.deleteFromTree(this.roleTree, id)
-            this.newAdd()
-          })
-      },
-      load() {
-        getMockData()
-          .then(res => {
-            res.data = res.data.roleList
-            console.log(res.data)
-            this.roleTree = []
-            this.roleTree.push(...res.data)
-          }).catch((error) => {
-            console.log(error)
-          })
-      },
-      /* eslint-disable */
-      renderContent(h, { node, data, store }) {
-        return (
-          <span>
-            <span>
-              <span> {node.label} </span>
-            </span>
-            <span class='render-content'>
-              <i class='fa fa-wrench' title='配置资源' on-click={(e) => this.settingResource(e, data.id)}> </i>
-              <i class='fa fa-trash' on-click={ () => this.deleteSelected(data.id)}> </i>
-            </span>
-          </span>)
-      },
-      /* eslint-disable */
-      settingResource(event, id) {
-        event.stopPropagation()
-        this.dialogVisible = true
-        if (this.resourceTree == null || this.resourceTree.length <= 0) {
-          this.dialogLoading = true
-          this.$http.get(api.TEST_DATA)
-              .then(res => {
-                this.dialogLoading = false
-                this.resourceTree = res.data.resourceList
-              }).catch((error) => {
-                console.log(error)
-                this.dialogLoading = false
-              })
+    },
+    handleFilter() {
+      this.listQuery.page = 1
+      this.getList()
+    },
+    handleSizeChange(val) {
+      this.listQuery.limit = val
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.listQuery.page = val
+      this.getList()
+    },
+    timeFilter(time) {
+      if (!time[0]) {
+        this.listQuery.start = undefined
+        this.listQuery.end = undefined
+        return
+      }
+      this.listQuery.start = parseInt(+time[0] / 1000)
+      this.listQuery.end = parseInt((+time[1] + 3600 * 1000 * 24) / 1000)
+    },
+    handleModifyStatus(row, status) {
+      this.$message({
+        message: '操作成功',
+        type: 'success'
+      })
+      row.status = status
+    },
+    handleCreate() {
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
+    },
+    handleUpdate(row) {
+      this.temp = Object.assign({}, row)
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+    },
+    handleDelete(userId, status) {
+      this.listLoading = true
+      fetch({
+        url: api.SYS_ACCOUNT_DELETE,
+        method: 'post',
+        data: {
+          userId: userId,
+          status: status
         }
-        this.$http.get(api.SYS_ROLE_RESOURCE + '?id=' + id)
-          .then(res => {
-            this.$refs.resourceTree.setCheckedKeys(res.data)
-          })
+      })
+        .then(res => {
+          this.list = res.data.result.list
+          this.total = res.data.result.total
+          this.listLoading = false
+        })
+      this.$notify({
+        title: '成功',
+        message: '删除成功',
+        type: 'success',
+        duration: 200
+      })
+      const index = this.list.indexOf(userId)
+      this.list.splice(index, 1)
+    },
+    create() {
+      this.temp.id = ''
+      this.temp.name = ''
+      this.temp.mobile = ''
+      this.temp.email = ''
+
+      this.list.unshift(this.temp)
+      this.dialogFormVisible = false
+      this.$notify({
+        title: '成功',
+        message: '创建成功',
+        type: 'success',
+        duration: 2000
+      })
+    },
+    update() {
+      this.temp.timestamp = +this.temp.timestamp
+      for (const v of this.list) {
+        if (v.id === this.temp.id) {
+          const index = this.list.indexOf(v)
+          this.list.splice(index, 1, this.temp)
+          break
+        }
+      }
+      this.dialogFormVisible = false
+      this.$notify({
+        title: '成功',
+        message: '更新成功',
+        type: 'success',
+        duration: 2000
+      })
+    },
+    resetTemp() {
+      this.temp = {
+        id: undefined,
+        importance: 0,
+        remark: '',
+        timestamp: 0,
+        title: '',
+        status: 'published',
+        type: ''
       }
     },
-    created() {
-      this.load()
+    handleDownload() {
+      require.ensure([], () => {
+        const { export_json_to_excel } = require('vendor/Export2Excel')
+        const tHeader = ['时间', '地区', '类型', '标题', '重要性']
+        const filterVal = ['timestamp', 'province', 'type', 'title', 'importance']
+        const data = this.formatJson(filterVal, this.list)
+        export_json_to_excel(tHeader, data, 'table数据')
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+        if (j === 'timestamp') {
+          return parseTime(v[j])
+        } else {
+          return v[j]
+        }
+      }))
     }
   }
+}
 </script>
-
-<style>
-  .render-content {
-    float: right;
-    margin-right: 20px
-  }
-
-  .render-content i.fa {
-    margin-left: 10px;
-  }
-
-  .render-content i.fa:hover{
-    color: #e6000f;
-  }
-
-  .select-tree .el-scrollbar.is-empty .el-select-dropdown__list {
-    padding: 0;
-  }
-
-  .select-tree .el-scrollbar {
-    border: 1px solid #d1dbe5;
-  }
-
-  .select-tree .el-tree{
-    border:0;
-  }
-
-</style>
